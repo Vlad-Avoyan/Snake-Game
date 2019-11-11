@@ -1,0 +1,46 @@
+body {
+    width: 100vw;
+    height: 100vh;
+}
+
+#app {
+    width: 100%;
+    height: 100%;
+}
+
+/* global app size */
+
+.App {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+ 
+ /* game size*/
+
+ .grid {
+    width: 200px;
+    height: 200px;
+}
+
+/* cell sizes inside the game*/
+
+.cell {
+    width: 10px;
+    height: 10px;
+    outline: 2px solid black;
+}
+
+.apple {
+    background-color: red;
+}
+
+.head {
+    background-color: blue;
+}
+
+.tail {
+    background-color: lightblue;
+}
