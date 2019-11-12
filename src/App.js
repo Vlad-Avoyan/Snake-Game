@@ -22,7 +22,8 @@ class App extends Component {
     }
     this.state = {
       grid,
-      apple: this.getRandomApple(),
+      apple: { row: Math.floor(Math.random() * 15),
+        col: Math.floor(Math.random() * 15)},
       snake: {
         head: {
 
@@ -40,17 +41,30 @@ class App extends Component {
   }
 
   componentDidMount = () => {
+    document.addEventListener('keydown', (e) => {
+      this.setVelocity(e)
+    })
     setTimeout(() => {
       this.gameLoop()
-    }, 1000);
+    }, 300);
   }
 
-  getRandomApple = () => ({
+  getRandomApple = () => {
+    const { snake } = this.state
 
     // apple shood be somwhere in rows and columns
-    row: Math.floor(Math.random() * 20),
-    col: Math.floor(Math.random() * 20)
-  })
+    const newApple = {
+      row: Math.floor(Math.random() * 15),
+      col: Math.floor(Math.random() * 15)
+  };
+  if(this.isTail(newApple) || (
+    snake.head.row === newApple.row 
+    && snake.head.col === newApple.col)) {
+    return this.getRandomApple()
+  } else {
+    return newApple
+  }
+}
 
   gameLoop = () => {
     if (this.state.gameOver) return;
@@ -72,7 +86,8 @@ class App extends Component {
 
       return nexState;
     }, () => {
-      if (this.isOffEdge()) {
+      const { snake } = this.state;
+      if (this.isOffEdge() || this.isTail(snake.head)) {
         this.setState({
           gameOver: true,
         });
@@ -81,7 +96,7 @@ class App extends Component {
       
       setTimeout(() => {
         this.gameLoop()
-      }, 1000);
+      }, 300 );
     })  
   }
 
@@ -121,8 +136,9 @@ class App extends Component {
 
   setVelocity = (event) => {
     if (event.keyCode === 38) { // up
-      this.setState((prevState) => ({
+      this.setState(({snake}) => ({
         snake: {
+          ...snake,
           velocity: {
             x: 0,
             y: -1
@@ -130,8 +146,9 @@ class App extends Component {
         }
       }))
     } else if (event.keyCode === 40) { //down
-      this.setState((prevState) => ({
+      this.setState(({snake}) => ({
         snake: {
+          ...snake,
           velocity: {
             x: 0,
             y: +1
@@ -139,8 +156,9 @@ class App extends Component {
         }
       }))
     } else if (event.keyCode === 39) { // right
-      this.setState((prevState) => ({
+      this.setState(({snake}) => ({
         snake: {
+          ...snake,
           velocity: {
             x: 1,
             y: 0
@@ -148,8 +166,9 @@ class App extends Component {
         }
       }))
     } else if (event.keyCode === 37) { //left
-      this.setState((prevState) => ({
+      this.setState(({snake}) => ({
         snake: {
+          ...snake,
           velocity: {
             x: -1,
             y: 0
@@ -163,7 +182,7 @@ class App extends Component {
     const { grid, snake, gameOver } = this.state
 
     return (
-      <div onKeyPress={this.setVelocity} className="App">
+      <div className="App">
         {
           gameOver
             ? <h1>Game Over! You Scored {snake.tail.length + 1}!</h1>
